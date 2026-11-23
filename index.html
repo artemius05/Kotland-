@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Учёт котлов" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f172a'/%3E%3Crect x='16' y='13' width='32' height='38' rx='6' fill='none' stroke='%23ffffff' stroke-width='3.5'/%3E%3Ccircle cx='32' cy='31' r='7' fill='none' stroke='%2338bdf8' stroke-width='3.5'/%3E%3Cline x1='22' y1='44' x2='42' y2='44' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230f172a'/%3E%3Crect x='45' y='36' width='90' height='108' rx='16' fill='none' stroke='%23ffffff' stroke-width='9'/%3E%3Ccircle cx='90' cy='88' r='20' fill='none' stroke='%2338bdf8' stroke-width='9'/%3E%3Cline x1='62' y1='124' x2='118' y2='124' stroke='%23ffffff' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <title>Учёт производства котлов за месяц</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-soft: #eff6ff;
+      --success: #16a34a;
+      --success-soft: #f0fdf4;
+      --danger: #dc2626;
+      --danger-soft: #fef2f2;
+      --shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Arial, sans-serif;
+      line-height: 1.45;
+    }
+
+    body {
+      padding-bottom: max(28px, env(safe-area-inset-bottom));
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 16px 36px;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .topbar-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--text);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .save-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--success-soft);
+      color: var(--success);
+      border: 1px solid #bbf7d0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+
+    .save-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      background: var(--surface-soft);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 12px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+
+    .tab-badge {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .tab-btn.active .tab-badge {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .panel-hint {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tab-mini-stat {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      padding: 6px 11px;
+      border-radius: 10px;
+    }
+
+    .table-search-bar {
+      padding: 12px 18px;
+      background: var(--surface-soft);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .table-search-input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .table-search-input:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-toggle-btn {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      background: var(--surface);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .builder-box {
+      margin: 16px 18px;
+      padding: 16px;
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+    }
+
+    .builder-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .builder-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .builder-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .model-picker {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .model-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .model-input {
+      width: 100%;
+      padding: 12px 104px 12px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .model-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+    }
+
+    .model-actions {
+      position: absolute;
+      right: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-mini-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--text);
+      border-radius: 8px;
+      height: 32px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .icon-mini-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .model-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      z-index: 30;
+      max-height: 260px;
+      overflow-y: auto;
+      background: var(--surface);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.14);
+      padding: 6px;
+    }
+
+    .model-dropdown.open {
+      display: block;
+    }
+
+    .model-option {
+      width: 100%;
+      appearance: none;
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .model-option:hover,
+    .model-option.selected {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .model-option-meta {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .part-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .part-name {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .part-specs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .spec-item {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 6px 8px;
+    }
+
+    .spec-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .spec-val {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 1px;
+    }
+
+    .builder-empty {
+      background: var(--surface);
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table.boilers-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table.boilers-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      background: var(--surface-soft);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    table.boilers-table th:nth-child(2),
+    table.boilers-table td:nth-child(2) {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    table.boilers-table th:nth-child(3),
+    table.boilers-table td:nth-child(3) {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    table.boilers-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    table.boilers-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.boilers-table tr.has-qty td {
+      background: #fafdff;
+    }
+
+    .boiler-num {
+      display: inline-block;
+      min-width: 30px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 1px 6px;
+      text-align: center;
+      margin-right: 6px;
+    }
+
+    .boiler-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .boiler-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .price-val {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .qty-control {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 4px;
+    }
+
+    .qty-btn {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      background: var(--surface);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s ease, transform 0.08s ease;
+    }
+
+    .qty-btn:active {
+      transform: scale(0.95);
+    }
+
+    .qty-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .qty-input {
+      width: 54px;
+      height: 34px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .qty-input:focus {
+      border-color: var(--primary);
+    }
+
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .qty-input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .summary-card {
+      position: sticky;
+      top: 16px;
+      padding: 18px;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .summary-title {
+      margin: 0 0 14px;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .kpi-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .kpi-box.highlight {
+      background: var(--primary-soft);
+      border-color: #bfdbfe;
+    }
+
+    .kpi-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .kpi-value {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-box.highlight .kpi-value {
+      color: var(--primary);
+    }
+
+    .breakdown-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 5px 0;
+    }
+
+    .breakdown-row + .breakdown-row {
+      border-top: 1px dashed var(--line);
+    }
+
+    .breakdown-key {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .breakdown-val {
+      font-weight: 800;
+      color: var(--text);
+      text-align: right;
+    }
+
+    .actions-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s ease, transform 0.08s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--surface-soft);
+      color: var(--text);
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: #fee2e2;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.56);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 560px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+      padding: 20px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .period-switcher {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .period-btn {
+      appearance: none;
+      border: 1px solid #cbd5e1;
+      background: var(--surface-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .period-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .report-preview-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 13px;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--text);
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .modal-actions .btn {
+      flex: 1 1 160px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      transform: translate(-50%, 16px);
+      background: var(--text);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 200;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        padding: 12px 10px 32px;
+      }
+
+      .parts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table.boilers-table th,
+      table.boilers-table td {
+        padding: 10px 8px;
+      }
+
+      .boiler-name {
+        font-size: 14px;
+      }
+
+      .qty-btn {
+        width: 32px;
+        height: 32px;
+      }
+
+      .qty-input {
+        width: 46px;
+        height: 32px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-head">
+        <div class="brand">
+          <div class="brand-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="4" y="3" width="16" height="18" rx="3"></rect>
+              <circle cx="12" cy="11" r="3.2"></circle>
+              <path d="M8 17h8" stroke-linecap="round"></path>
+            </svg>
+          </div>
+          <div>
+            <h1 class="brand-title">Учёт производства котлов</h1>
+            <p class="brand-sub" id="monthLabel">Месячный учёт • Гейлетина и Обшива</p>
+          </div>
+        </div>
+        <div class="save-pill" id="saveStatus">
+          <span class="save-dot"></span>
+          <span>Сохранено на телефоне</span>
+        </div>
+      </div>
+
+      <nav class="tabs" role="tablist" aria-label="Разделы учёта">
+        <button type="button" class="tab-btn active" id="tabBtn-geiletina" role="tab" aria-selected="true" data-tab="geiletina">
+          <span>Гейлетина</span>
+          <span class="tab-badge" id="badge-geiletina">0 шт</span>
+        </button>
+        <button type="button" class="tab-btn" id="tabBtn-obshiva" role="tab" aria-selected="false" data-tab="obshiva">
+          <span>Обшива</span>
+          <span class="tab-badge" id="badge-obshiva">0 шт</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="panel" aria-live="polite">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title" id="sectionTitle">Гейлетина</h2>
+            <p class="panel-hint" id="sectionHint">Лист «Гейлетина» • 102 позиции по порядку</p>
+          </div>
+          <div class="tab-mini-stat" id="sectionSummary">0 шт • 0 ₴</div>
+        </div>
+
+        <div class="builder-box" id="sheathingBuilder" style="display: none;">
+          <div class="builder-top">
+            <h3 class="builder-title">Конструктор деталей обшивки</h3>
+            <span class="builder-sub">Выберите модель котла — откроются 4 детали (ширина, длина, загиб, количество)</span>
+          </div>
+
+          <div class="model-picker">
+            <div class="model-input-wrap">
+              <input
+                type="text"
+                id="modelSearchInput"
+                class="model-input"
+                placeholder="Введите номер или название котла..."
+                autocomplete="off"
+              />
+              <div class="model-actions">
+                <button type="button" class="icon-mini-btn" id="toggleDropdownBtn" title="Список моделей">Список</button>
+                <button type="button" class="icon-mini-btn" id="clearModelBtn" title="Очистить выбор">×</button>
+              </div>
+            </div>
+            <div class="model-dropdown" id="modelDropdown" role="listbox"></div>
+          </div>
+
+          <div id="partsResult"></div>
+        </div>
+
+        <div class="table-search-bar">
+          <input
+            type="text"
+            id="tableSearchInput"
+            class="table-search-input"
+            placeholder="Поиск по № (1–102) или названию котла..."
+            autocomplete="off"
+          />
+          <button type="button" class="filter-toggle-btn" id="onlyMarkedBtn">Только отмеченные</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="boilers-table">
+            <thead>
+              <tr>
+                <th>№ и Котёл</th>
+                <th>Цена</th>
+                <th>Количество</th>
+              </tr>
+            </thead>
+            <tbody id="boilersTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="panel summary-card" aria-label="Итог за месяц">
+        <div class="summary-label">Общий итог за месяц</div>
+        <h2 class="summary-title">Гейлетина + Обшива</h2>
+
+        <div class="kpi-grid">
+          <div class="kpi-box highlight">
+            <div class="kpi-name">Всего котлов</div>
+            <div class="kpi-value" id="totalQtyVal">0 шт</div>
+          </div>
+          <div class="kpi-box highlight">
+            <div class="kpi-name">Общая сумма</div>
+            <div class="kpi-value" id="totalSumVal">0 ₴</div>
+          </div>
+        </div>
+
+        <div class="breakdown-box">
+          <div class="breakdown-row">
+            <span class="breakdown-key">Гейлетина</span>
+            <span class="breakdown-val" id="breakdownGeiletina">0 шт • 0 ₴</span>
+          </div>
+          <div class="breakdown-row">
+            <span class="breakdown-key">Обшива</span>
+            <span class="breakdown-val" id="breakdownObshiva">0 шт • 0 ₴</span>
+          </div>
+        </div>
+
+        <div class="actions-stack">
+          <button type="button" class="btn btn-primary" id="openReportBtn">
+            Поделиться / Скачать PDF
+          </button>
+          <button type="button" class="btn btn-danger" id="clearAllBtn">
+            Очистить за месяц
+          </button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="reportModal" role="dialog" aria-modal="true" aria-labelledby="reportModalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 class="modal-title" id="reportModalTitle">Отчёт за месяц</h3>
+        <button type="button" class="close-btn" id="closeReportModalBtn" aria-label="Закрыть">×</button>
+      </div>
+      <div class="period-switcher" id="periodSwitcher">
+        <button type="button" class="period-btn active" data-period="current" id="periodCurrentBtn">Текущий месяц</button>
+        <button type="button" class="period-btn" data-period="previous" id="periodPreviousBtn">Прошлый месяц</button>
+      </div>
+      <div class="report-preview-box" id="reportPreviewText"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="sharePdfBtn">Поделиться PDF</button>
+        <button type="button" class="btn btn-secondary" id="downloadPdfBtn">Скачать PDF</button>
+        <button type="button" class="btn btn-secondary" id="copyTextReportBtn">Копировать текст</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="confirmClearModal" role="dialog" aria-modal="true" aria-labelledby="confirmClearTitle">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-head">
+        <h3 class="modal-title" id="confirmClearTitle">Очистить количество за месяц?</h3>
+        <button type="button" class="close-btn" id="closeClearModalBtn" aria-label="Закрыть">×</button>
+      </div>
+      <p style="margin: 0 0 16px; color: var(--muted); font-size: 14px;">
+        Количество котлов сбросится до <strong>0</strong> в обеих вкладках («Гейлетина» и «Обшива»), чтобы начать учёт заново.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger" id="confirmClearBtn">Да, очистить</button>
+        <button type="button" class="btn btn-secondary" id="cancelClearBtn">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // [№, Название котла, Цена Обшива, Цена Гейлетина]
+      const BOILER_ROWS = [
+        // Столбец 1 (1–38)
+        [1, 'КТ-12П', 300, 140],
+        [2, 'КТ-15П', 310, 155],
+        [3, 'КТ-18П', 325, 190],
+        [4, 'КО-12,5', 300, 125],
+        [5, 'КО-15', 310, 180],
+        [6, 'КО-18', 325, 200],
+        [7, 'КО-14-3д', 430, 250],
+        [8, 'КО-16-3д', 430, 250],
+        [9, 'КМ-12,5', 430, 210],
+        [10, 'КМ-15', 430, 210],
+        [11, 'КМ-18', 450, 215],
+        [12, 'КМ-21', 450, 215],
+        [13, 'КМ-24', 475, 235],
+        [14, 'КМ-27', 475, 235],
+        [15, 'КН-12,5', 300, 145],
+        [16, 'КН-15', 325, 180],
+        [17, 'КН-18', 350, 200],
+        [18, 'КН-24', 430, 215],
+        [19, 'КГ-14(3дв)', 445, 250],
+        [20, 'КГ-15(3дв)', 445, 250],
+        [21, 'КГ-15', 370, 230],
+        [22, 'КГ-16', 455, 270],
+        [23, 'КГ-17', 455, 270],
+        [24, 'КГ-18', 580, 305],
+        [25, 'КГ-19', 580, 305],
+        [26, 'КГ-22', 595, 380],
+        [27, 'КГ-25', 625, 380],
+        [28, 'КГ-27', 625, 380],
+        [29, 'КГ-30', 680, 380],
+        [30, 'КГ-35', 680, 395],
+        [31, 'КГ-40', 720, 500],
+        [32, 'КГ-50', 770, 500],
+        [33, 'КГ-75', 840, 550],
+        [34, 'КГ-16п', 455, 270],
+        [35, 'КГ-17п', 455, 270],
+        [36, 'КГ-18п', 580, 305],
+        [37, 'КГ-19п', 580, 305],
+        [38, 'КГ-22п', 595, 380],
+
+        // Столбец 2 (39–76)
+        [39, 'КГ-25п', 625, 380],
+        [40, 'КГ-27п', 625, 380],
+        [41, 'КГ-30п', 680, 380],
+        [42, 'КГ-35п', 680, 395],
+        [43, 'КГ-40п', 720, 500],
+        [44, 'КГ-50п', 770, 500],
+        [45, 'КГП-18', 510, 325],
+        [46, 'КГП-25', 540, 380],
+        [47, 'КГП-38', 625, 425],
+        [48, 'КГП-50', 860, 500],
+        [49, 'КГУ-16', 535, 305],
+        [50, 'КГУ-20', 550, 380],
+        [51, 'КГУ-25', 575, 380],
+        [52, 'КГУ-30', 625, 390],
+        [53, 'КГУ-40', 650, 500],
+        [54, 'КГУ-50', 680, 500],
+        [55, 'КГУ-75', 755, 550],
+        [56, 'КГУ-95', 830, 595],
+        [57, 'КГФ-20', 0, 0],
+        [58, 'КГФ-30', 685, 380],
+        [59, 'КТГ-15', 500, 215],
+        [60, 'ПР-17', 535, 230],
+        [61, 'ПР-25', 535, 250],
+        [62, 'ПР-31', 635, 300],
+        [63, 'ПР-40', 680, 380],
+        [64, 'ПР-50', 700, 500],
+        [65, 'ПР-65', 805, 755],
+        [66, 'ПР-80', 880, 875],
+        [67, 'КВ-65', 1135, 610],
+        [68, 'КВ-80', 1190, 755],
+        [69, 'КВ-98', 1270, 875],
+        [70, 'КВ-125', 2070, 875],
+        [71, 'КВ-150', 2135, 1010],
+        [72, 'КВ-170', 2135, 1010],
+        [73, 'КВ-200', 2210, 1250],
+        [74, 'КВ-250', 2280, 1745],
+        [75, 'КВ-300', 2620, 2050],
+        [76, 'КВ-350', 3590, 2050],
+
+        // Столбец 3 (77–102)
+        [77, 'КВ-400', 4280, 2160],
+        [78, 'КВУ-16', 500, 210],
+        [79, 'КВУ-20', 500, 230],
+        [80, 'КВУ-25', 590, 360],
+        [81, 'КВУ-30', 635, 360],
+        [82, 'КВУ-40', 780, 500],
+        [83, 'КВУ-50', 840, 500],
+        [84, 'БС-250', 830, 0],
+        [85, 'БПП-350', 880, 0],
+        [86, 'БПП-400', 880, 0],
+        [87, 'БПФ-300', 1760, 0],
+        [88, 'БПФ-600', 2210, 0],
+        [89, 'БПФ-900', 4415, 0],
+        [90, 'БПФ-1500', 4860, 0],
+        [91, 'БПФ-2-300', 1930, 0],
+        [92, 'БПФ-2-600', 2345, 0],
+        [93, 'БПФ-2-1000', 2760, 0],
+        [94, 'ТА200', 0, 0],
+        [95, 'ТА320', 0, 0],
+        [96, 'ТА500', 0, 0],
+        [97, 'ТА800', 0, 0],
+        [98, 'ТА1000', 0, 0],
+        [99, 'ТА1500', 0, 0],
+        [100, 'ТА2000', 0, 0],
+        [101, 'ТА3000', 0, 0],
+        [102, 'ТА4000', 0, 0]
+      ];
+
+      const CATALOG = {
+        geiletina: BOILER_ROWS.map(([num, name, , geilPrice]) => ({
+          id: `g-${num}`,
+          num,
+          name,
+          price: geilPrice
+        })),
+        obshiva: BOILER_ROWS.map(([num, name, obshivaPrice]) => ({
+          id: `o-${num}`,
+          num,
+          name,
+          price: obshivaPrice
+        }))
+      };
+
+      const SHEATHING_SPECS = {};
+
+      const STORAGE_KEY = 'boiler_monthly_tracker_local_v4';
+      let memoryFallback = null;
+
+      function getCurrentMonthKey(dateObj) {
+        const d = dateObj || new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}-${month}`;
+      }
+
+      function getPreviousMonthDate(dateObj) {
+        const d = dateObj || new Date();
+        return new Date(d.getFullYear(), d.getMonth() - 1, 1);
+      }
+
+      function createEmptyQuantities() {
+        const q = { geiletina: {}, obshiva: {} };
+        ['geiletina', 'obshiva'].forEach((tab) => {
+          CATALOG[tab].forEach((item) => {
+            q[tab][item.id] = 0;
+          });
+        });
+        return q;
+      }
+
+      function cloneQuantities(src) {
+        const out = createEmptyQuantities();
+        if (!src || typeof src !== 'object') return out;
+        ['geiletina', 'obshiva'].forEach((tab) => {
+          if (!src[tab] || typeof src[tab] !== 'object') return;
+          CATALOG[tab].forEach((item) => {
+            const v = Number(src[tab][item.id]);
+            out[tab][item.id] = Number.isFinite(v) && v > 0 ? Math.floor(v) : 0;
+          });
+        });
+        return out;
+      }
+
+      function getAllBuilderModels() {
+        return BOILER_ROWS.map(([num, name]) => `${num}. ${name}`);
+      }
+
+      const state = {
+        monthKey: getCurrentMonthKey(),
+        previousMonthKey: getCurrentMonthKey(getPreviousMonthDate()),
+        reportPeriod: 'current',
+        activeTab: 'geiletina',
+        searchQuery: '',
+        onlyMarked: false,
+        selectedModel: getAllBuilderModels()[0] || '',
+        quantities: createEmptyQuantities(),
+        previousQuantities: createEmptyQuantities()
+      };
+
+      function readStorage() {
+        try {
+          const raw = window.localStorage.getItem(STORAGE_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch (err) {
+          // ignore
+        }
+        return memoryFallback;
+      }
+
+      function writeStorage() {
+        const payload = {
+          monthKey: state.monthKey,
+          previousMonthKey: state.previousMonthKey,
+          activeTab: state.activeTab,
+          selectedModel: state.selectedModel,
+          quantities: state.quantities,
+          previousQuantities: state.previousQuantities,
+          updatedAt: Date.now()
+        };
+        memoryFallback = payload;
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+          showSaveIndicator('Сохранено на телефоне');
+        } catch (err) {
+          showSaveIndicator('Сохранено в сессии');
+        }
+      }
+
+      function syncMonthRollover(notifyUser) {
+        const now = new Date();
+        const actualMonthKey = getCurrentMonthKey(now);
+        const actualPrevKey = getCurrentMonthKey(getPreviousMonthDate(now));
+
+        if (state.monthKey !== actualMonthKey) {
+          state.previousMonthKey = state.monthKey || actualPrevKey;
+          state.previousQuantities = cloneQuantities(state.quantities);
+          state.monthKey = actualMonthKey;
+          state.quantities = createEmptyQuantities();
+          state.reportPeriod = 'current';
+          writeStorage();
+          if (notifyUser) {
+            showToast('Новый месяц: счётчики обнулены, прошлый сохранён');
+          }
+        }
+      }
+
+      function loadState() {
+        state.quantities = createEmptyQuantities();
+        state.previousQuantities = createEmptyQuantities();
+        const saved = readStorage();
+        if (saved) {
+          if (typeof saved.monthKey === 'string') state.monthKey = saved.monthKey;
+          if (typeof saved.previousMonthKey === 'string') state.previousMonthKey = saved.previousMonthKey;
+          if (saved.activeTab === 'geiletina' || saved.activeTab === 'obshiva') state.activeTab = saved.activeTab;
+          if (typeof saved.selectedModel === 'string') state.selectedModel = saved.selectedModel;
+          state.quantities = cloneQuantities(saved.quantities);
+          state.previousQuantities = cloneQuantities(saved.previousQuantities);
+        }
+        syncMonthRollover(false);
+      }
+
+      let saveTimer = null;
+      function showSaveIndicator(text) {
+        const badge = document.getElementById('saveStatus');
+        if (!badge) return;
+        const label = badge.lastElementChild;
+        if (label) label.textContent = text;
+        badge.style.opacity = '1';
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          if (label) label.textContent = 'Сохранено на телефоне';
+        }, 1200);
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          writeStorage();
+        } else {
+          syncMonthRollover(true);
+          renderAll();
+        }
+      });
+      window.addEventListener('pagehide', writeStorage);
+      window.addEventListener('beforeunload', writeStorage);
+
+      function formatNumber(num) {
+        return new Intl.NumberFormat('ru-RU').format(Math.round(Number(num) || 0));
+      }
+
+      function formatMoney(num) {
+        return formatNumber(num) + ' ₴';
+      }
+
+      function formatQty(num) {
+        return formatNumber(num) + ' шт';
+      }
+
+      function getQuantitiesForPeriod(period) {
+        return period === 'previous' ? state.previousQuantities : state.quantities;
+      }
+
+      function getTabStats(tab, qSource) {
+        const source = qSource || state.quantities;
+        let qty = 0;
+        let sum = 0;
+        CATALOG[tab].forEach((item) => {
+          const q = Number(source[tab]?.[item.id] || 0);
+          qty += q;
+          sum += q * Number(item.price || 0);
+        });
+        return { qty, sum };
+      }
+
+      function getCombinedStats(qSource) {
+        const src = qSource || state.quantities;
+        const g = getTabStats('geiletina', src);
+        const o = getTabStats('obshiva', src);
+        return {
+          geiletina: g,
+          obshiva: o,
+          totalQty: g.qty + o.qty,
+          totalSum: g.sum + o.sum
+        };
+      }
+
+      function getMonthTitle(period) {
+        const now = new Date();
+        const targetDate = period === 'previous' ? getPreviousMonthDate(now) : now;
+        const raw = targetDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+        return raw.charAt(0).toUpperCase() + raw.slice(1);
+      }
+
+      function getTodayFormatted() {
+        return new Date().toLocaleDateString('ru-RU');
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(showToast._timer);
+        showToast._timer = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2200);
+      }
+
+      function renderAll() {
+        document.getElementById('monthLabel').textContent = 'Отчётный период: ' + getMonthTitle('current');
+
+        const isGeil = state.activeTab === 'geiletina';
+        const btnGeil = document.getElementById('tabBtn-geiletina');
+        const btnObsh = document.getElementById('tabBtn-obshiva');
+
+        btnGeil.classList.toggle('active', isGeil);
+        btnGeil.setAttribute('aria-selected', String(isGeil));
+        btnObsh.classList.toggle('active', !isGeil);
+        btnObsh.setAttribute('aria-selected', String(!isGeil));
+
+        document.getElementById('sectionTitle').textContent = isGeil ? 'Гейлетина' : 'Обшива';
+        document.getElementById('sectionHint').textContent = isGeil
+          ? 'Тарифы по листу «Гейлетина» • 102 позиции по порядку'
+          : 'Тариф «Обшивка» и конструктор 4 деталей • 102 позиции';
+
+        document.getElementById('sheathingBuilder').style.display = isGeil ? 'none' : 'block';
+        document.getElementById('onlyMarkedBtn').classList.toggle('active', state.onlyMarked);
+
+        renderTable();
+        renderSummary();
+        if (!isGeil) {
+          renderSheathingBuilder();
+        }
+      }
+
+      function renderTable() {
+        const tab = state.activeTab;
+        const tbody = document.getElementById('boilersTableBody');
+        const q = (state.searchQuery || '').trim().toLowerCase();
+
+        const filtered = CATALOG[tab].filter((item) => {
+          const qty = Number(state.quantities[tab][item.id] || 0);
+          if (state.onlyMarked && qty <= 0) return false;
+          if (!q) return true;
+          return String(item.num) === q || `${item.num}. ${item.name}`.toLowerCase().includes(q);
+        });
+
+        if (!filtered.length) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="3" style="text-align:center; padding: 24px 12px; color: var(--muted); font-size: 14px;">
+                Позиции не найдены. Очистите поиск или снимите фильтр.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filtered.map((item) => {
+          const qty = Number(state.quantities[tab][item.id] || 0);
+          const rowSum = qty * Number(item.price || 0);
+          return `
+            <tr class="${qty > 0 ? 'has-qty' : ''}">
+              <td>
+                <div class="boiler-name"><span class="boiler-num">${item.num}</span>${escapeHtml(item.name)}</div>
+                <div class="boiler-sub">${qty > 0 ? 'Сумма по позиции: ' + formatMoney(rowSum) : 'Не отмечено'}</div>
+              </td>
+              <td>
+                <div class="price-val">${formatMoney(item.price)}</div>
+              </td>
+              <td>
+                <div class="qty-control">
+                  <button type="button" class="qty-btn" data-action="dec" data-tab="${tab}" data-id="${item.id}" aria-label="Уменьшить количество">−</button>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputmode="numeric"
+                    class="qty-input"
+                    data-tab="${tab}"
+                    data-id="${item.id}"
+                    value="${qty}"
+                    aria-label="Количество для ${escapeHtml(item.name)}"
+                  />
+                  <button type="button" class="qty-btn" data-action="inc" data-tab="${tab}" data-id="${item.id}" aria-label="Увеличить количество">+</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function renderSummary() {
+        const stats = getCombinedStats(state.quantities);
+        const activeStats = state.activeTab === 'geiletina' ? stats.geiletina : stats.obshiva;
+
+        document.getElementById('badge-geiletina').textContent = formatQty(stats.geiletina.qty);
+        document.getElementById('badge-obshiva').textContent = formatQty(stats.obshiva.qty);
+        document.getElementById('sectionSummary').textContent =
+          `${formatQty(activeStats.qty)} • ${formatMoney(activeStats.sum)}`;
+
+        document.getElementById('totalQtyVal').textContent = formatQty(stats.totalQty);
+        document.getElementById('totalSumVal').textContent = formatMoney(stats.totalSum);
+
+        document.getElementById('breakdownGeiletina').textContent =
+          `${formatQty(stats.geiletina.qty)} • ${formatMoney(stats.geiletina.sum)}`;
+        document.getElementById('breakdownObshiva').textContent =
+          `${formatQty(stats.obshiva.qty)} • ${formatMoney(stats.obshiva.sum)}`;
+      }
+
+      function getFourPartsForModel(modelLabel) {
+        const cleanName = modelLabel.replace(/^\d+\.\s*/, '');
+        const spec = SHEATHING_SPECS[modelLabel] || SHEATHING_SPECS[cleanName] || {};
+        const formatPart = (label, item) => ({
+          label,
+          width: item?.width || '—',
+          length: item?.length || '—',
+          bend: item?.bend || '—',
+          qty: formatQty(item?.qty ?? 1)
+        });
+
+        return [
+          formatPart('Швеллер верхний', spec.upperChannel),
+          formatPart('Швеллер нижний', spec.lowerChannel),
+          formatPart('Уголок передний', spec.frontAngle),
+          formatPart('Уголок задний', spec.rearAngle)
+        ];
+      }
+
+      function renderSheathingBuilder() {
+        const allModels = getAllBuilderModels();
+        const input = document.getElementById('modelSearchInput');
+        const partsBox = document.getElementById('partsResult');
+
+        if (document.activeElement !== input) {
+          input.value = state.selectedModel || '';
+        }
+
+        const q = (state.selectedModel || '').trim().toLowerCase();
+        const matchedModel = allModels.find((m) => m.toLowerCase() === q) || null;
+
+        if (!matchedModel) {
+          partsBox.innerHTML = `
+            <div class="builder-empty">
+              Выберите модель котла из списка выше, чтобы увидеть параметры 4 деталей:
+              <strong>Швеллер верхний</strong>, <strong>Швеллер нижний</strong>, <strong>Уголок передний</strong>, <strong>Уголок задний</strong>.
+            </div>
+          `;
+          return;
+        }
+
+        const parts = getFourPartsForModel(matchedModel);
+        partsBox.innerHTML = `
+          <div class="parts-grid">
+            ${parts.map((p) => `
+              <div class="part-card">
+                <div class="part-name">${escapeHtml(p.label)}</div>
+                <div class="part-specs">
+                  <div class="spec-item">
+                    <div class="spec-label">Ширина</div>
+                    <div class="spec-val">${escapeHtml(p.width)}</div>
+                  </div>
+                  <div class="spec-item">
+                    <div class="spec-label">Длина</div>
+                    <div class="spec-val">${escapeHtml(p.length)}</div>
+                  </div>
+                  <div class="spec-item">
+                    <div class="spec-label">Загиб</div>
+                    <div class="spec-val">${escapeHtml(p.bend)}</div>
+                  </div>
+                  <div class="spec-item">
+                    <div class="spec-label">Количество</div>
+                    <div class="spec-val">${escapeHtml(p.qty)}</div>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      function renderDropdown(filterText) {
+        const dropdown = document.getElementById('modelDropdown');
+        const q = (filterText || '').trim().toLowerCase();
+        const models = getAllBuilderModels().filter((m) => !q || m.toLowerCase().includes(q));
+
+        if (!models.length) {
+          dropdown.innerHTML = `<div class="model-option" style="cursor:default;color:var(--muted);">Модель не найдена</div>`;
+          dropdown.classList.add('open');
+          return;
+        }
+
+        dropdown.innerHTML = models.map((m) => {
+          const isSel = state.selectedModel === m;
+          return `
+            <button type="button" class="model-option ${isSel ? 'selected' : ''}" data-select-model="${escapeHtml(m)}">
+              <span>${escapeHtml(m)}</span>
+              <span class="model-option-meta">4 детали</span>
+            </button>
+          `;
+        }).join('');
+        dropdown.classList.add('open');
+      }
+
+      function closeDropdown() {
+        document.getElementById('modelDropdown').classList.remove('open');
+      }
+
+      function updatePeriodButtons() {
+        const isCurrent = state.reportPeriod !== 'previous';
+        document.getElementById('periodCurrentBtn').classList.toggle('active', isCurrent);
+        document.getElementById('periodPreviousBtn').classList.toggle('active', !isCurrent);
+        document.getElementById('reportPreviewText').textContent = buildReportText(state.reportPeriod);
+      }
+
+      function buildReportText(period) {
+        const chosenPeriod = period || state.reportPeriod || 'current';
+        const qSource = getQuantitiesForPeriod(chosenPeriod);
+        const stats = getCombinedStats(qSource);
+        const monthTitle = getMonthTitle(chosenPeriod);
+        const today = getTodayFormatted();
+
+        const formatSectionLines = (tab) => {
+          const lines = [];
+          CATALOG[tab].forEach((item) => {
+            const q = Number(qSource[tab]?.[item.id] || 0);
+            if (q > 0) {
+              const rowSum = q * Number(item.price || 0);
+              lines.push(`- №${item.num} ${item.name}: ${q} шт. × ${formatNumber(item.price)} ₴ = ${formatNumber(rowSum)} ₴`);
+            }
+          });
+          return lines.length ? lines.join('\n') : '- Нет отмеченных позиций';
+        };
+
+        return [
+          `Отчёт за ${monthTitle}`,
+          `Дата: ${today}`,
+          '',
+          `Гейлетина: ${stats.geiletina.qty} шт. (${formatMoney(stats.geiletina.sum)})`,
+          formatSectionLines('geiletina'),
+          '',
+          `Обшива: ${stats.obshiva.qty} шт. (${formatMoney(stats.obshiva.sum)})`,
+          formatSectionLines('obshiva'),
+          '',
+          `ИТОГО ЗА МЕСЯЦ: ${stats.totalQty} шт. на сумму ${formatMoney(stats.totalSum)}`
+        ].join('\n');
+      }
+
+      function getPdfFileName(period) {
+        const chosenPeriod = period || state.reportPeriod || 'current';
+        const cleanMonth = getMonthTitle(chosenPeriod)
+          .replace(/[\\/:*?"<>|]+/g, '_')
+          .replace(/\s+/g, '_');
+        return `Отчет_Котлы_${cleanMonth}.pdf`;
+      }
+
+      function generatePdfBlob(period) {
+        const chosenPeriod = period || state.reportPeriod || 'current';
+        const qSource = getQuantitiesForPeriod(chosenPeriod);
+
+        return new Promise((resolve, reject) => {
+          try {
+            const stats = getCombinedStats(qSource);
+            const monthTitle = getMonthTitle(chosenPeriod);
+            const today = getTodayFormatted();
+
+            const width = 1240;
+            const height = 1754;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(60, 60, width - 120, 150);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 40px sans-serif';
+            ctx.fillText('ОТЧЁТ ПО ПРОИЗВОДСТВУ КОТЛОВ', 95, 122);
+
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '26px sans-serif';
+            ctx.fillText(`Период: ${monthTitle}   •   Дата: ${today}`, 95, 174);
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(60, 236, width - 120, 110);
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(60, 236, width - 120, 110);
+
+            ctx.fillStyle = '#2563eb';
+            ctx.font = 'bold 34px sans-serif';
+            ctx.fillText(
+              `ИТОГО ЗА МЕСЯЦ: ${formatQty(stats.totalQty)}  на сумму  ${formatMoney(stats.totalSum)}`,
+              90,
+              303
+            );
+
+            let y = 395;
+
+            const drawSectionBlock = (title, tab, secStats) => {
+              ctx.fillStyle = '#0f172a';
+              ctx.font = 'bold 32px sans-serif';
+              ctx.fillText(`${title} — ${formatQty(secStats.qty)} (${formatMoney(secStats.sum)})`, 60, y);
+              y += 18;
+
+              ctx.fillStyle = '#e2e8f0';
+              ctx.fillRect(60, y, width - 120, 48);
+              ctx.fillStyle = '#0f172a';
+              ctx.font = 'bold 24px sans-serif';
+              ctx.fillText('№ и Наименование котла', 80, y + 32);
+              ctx.fillText('Цена', 710, y + 32);
+              ctx.fillText('Кол-во', 870, y + 32);
+              ctx.fillText('Сумма', 1020, y + 32);
+              y += 48;
+
+              const rows = CATALOG[tab].filter((it) => Number(qSource[tab]?.[it.id] || 0) > 0);
+              if (!rows.length) {
+                ctx.fillStyle = '#f8fafc';
+                ctx.fillRect(60, y, width - 120, 52);
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.strokeRect(60, y, width - 120, 52);
+                ctx.fillStyle = '#64748b';
+                ctx.font = '24px sans-serif';
+                ctx.fillText('Отмеченных котлов за период нет', 80, y + 34);
+                y += 88;
+                return;
+              }
+
+              rows.forEach((item, idx) => {
+                const q = Number(qSource[tab]?.[item.id] || 0);
+                const rowSum = q * Number(item.price || 0);
+
+                ctx.fillStyle = idx % 2 === 0 ? '#ffffff' : '#f8fafc';
+                ctx.fillRect(60, y, width - 120, 48);
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(60, y, width - 120, 48);
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '23px sans-serif';
+                ctx.fillText(`№${item.num} ${item.name}`.slice(0, 42), 80, y + 32);
+                ctx.fillText(formatMoney(item.price), 710, y + 32);
+                ctx.fillText(formatQty(q), 870, y + 32);
+                ctx.font = 'bold 23px sans-serif';
+                ctx.fillText(formatMoney(rowSum), 1020, y + 32);
+                y += 48;
+              });
+
+              y += 38;
+            };
+
+            drawSectionBlock('Гейлетина', 'geiletina', stats.geiletina);
+            drawSectionBlock('Обшива', 'obshiva', stats.obshiva);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '22px sans-serif';
+            ctx.fillText('Сформировано в приложении «Учёт производства котлов»', 60, height - 60);
+
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+            const base64 = dataUrl.split(',')[1];
+            const binaryStr = atob(base64);
+            const jpgBytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+              jpgBytes[i] = binaryStr.charCodeAt(i);
+            }
+
+            const pdfBlob = buildPdfFromJpeg(jpgBytes, width, height);
+            resolve(pdfBlob);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      function buildPdfFromJpeg(jpgBytes, imgWidth, imgHeight) {
+        const pageW = 595.28;
+        const pageH = 841.89;
+        const encoder = new TextEncoder();
+        const chunks = [];
+        const offsets = [];
+        let totalLen = 0;
+
+        const appendStr = (str) => {
+          const bytes = encoder.encode(str);
+          chunks.push(bytes);
+          totalLen += bytes.length;
+        };
+
+        const appendBytes = (bytes) => {
+          chunks.push(bytes);
+          totalLen += bytes.length;
+        };
+
+        const startObj = (objNum) => {
+          offsets[objNum] = totalLen;
+          appendStr(`${objNum} 0 obj\n`);
+        };
+
+        const endObj = () => {
+          appendStr('endobj\n');
+        };
+
+        appendStr('%PDF-1.4\n');
+
+        startObj(1);
+        appendStr('<< /Type /Catalog /Pages 2 0 R >>\n');
+        endObj();
+
+        startObj(2);
+        appendStr('<< /Type /Pages /Kids [3 0 R] /Count 1 >>\n');
+        endObj();
+
+        startObj(3);
+        appendStr(
+          `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] ` +
+          `/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>\n`
+        );
+        endObj();
+
+        startObj(4);
+        appendStr(
+          `<< /Type /XObject /Subtype /Image /Width ${imgWidth} /Height ${imgHeight} ` +
+          `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpgBytes.length} >>\nstream\n`
+        );
+        appendBytes(jpgBytes);
+        appendStr('\nendstream\n');
+        endObj();
+
+        const contentStream = `q ${pageW} 0 0 ${pageH} 0 0 cm /Im0 Do Q\n`;
+        startObj(5);
+        appendStr(`<< /Length ${contentStream.length} >>\nstream\n${contentStream}endstream\n`);
+        endObj();
+
+        const xrefStart = totalLen;
+        appendStr(`xref\n0 6\n0000000000 65535 f \n`);
+        for (let i = 1; i <= 5; i++) {
+          const pad = String(offsets[i] || 0).padStart(10, '0');
+          appendStr(`${pad} 00000 n \n`);
+        }
+
+        appendStr(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`);
+
+        return new Blob(chunks, { type: 'application/pdf' });
+      }
+
+      async function handleSharePdf() {
+        try {
+          const pdfBlob = await generatePdfBlob(state.reportPeriod);
+          const fileName = getPdfFileName(state.reportPeriod);
+          const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+          if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+              files: [pdfFile]
+            });
+            showToast('PDF отправлен');
+            return;
+          }
+
+          triggerDownload(pdfBlob, fileName);
+          showToast('PDF скачан — прикрепите файл в мессенджере');
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          showToast('Не удалось открыть меню отправки');
+        }
+      }
+
+      async function handleDownloadPdf() {
+        try {
+          const pdfBlob = await generatePdfBlob(state.reportPeriod);
+          triggerDownload(pdfBlob, getPdfFileName(state.reportPeriod));
+          showToast('PDF-файл сохранён');
+        } catch (err) {
+          showToast('Ошибка при создании PDF');
+        }
+      }
+
+      function triggerDownload(blob, fileName) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function bindEvents() {
+        document.querySelectorAll('.tab-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            syncMonthRollover(true);
+            const tab = btn.getAttribute('data-tab');
+            if (tab === 'geiletina' || tab === 'obshiva') {
+              state.activeTab = tab;
+              writeStorage();
+              renderAll();
+            }
+          });
+        });
+
+        document.getElementById('tableSearchInput').addEventListener('input', (e) => {
+          state.searchQuery = e.target.value;
+          renderTable();
+        });
+
+        document.getElementById('onlyMarkedBtn').addEventListener('click', () => {
+          state.onlyMarked = !state.onlyMarked;
+          document.getElementById('onlyMarkedBtn').classList.toggle('active', state.onlyMarked);
+          renderTable();
+        });
+
+        document.getElementById('boilersTableBody').addEventListener('click', (e) => {
+          const btn = e.target.closest('.qty-btn');
+          if (!btn) return;
+          syncMonthRollover(true);
+          const tab = btn.getAttribute('data-tab');
+          const id = btn.getAttribute('data-id');
+          const action = btn.getAttribute('data-action');
+          const current = Number(state.quantities[tab]?.[id] || 0);
+          const next = action === 'inc' ? current + 1 : Math.max(0, current - 1);
+
+          state.quantities[tab][id] = next;
+          writeStorage();
+          renderTable();
+          renderSummary();
+        });
+
+        document.getElementById('boilersTableBody').addEventListener('input', (e) => {
+          const input = e.target.closest('.qty-input');
+          if (!input) return;
+          syncMonthRollover(true);
+          const tab = input.getAttribute('data-tab');
+          const id = input.getAttribute('data-id');
+          const parsed = parseInt(input.value, 10);
+          const next = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+
+          state.quantities[tab][id] = next;
+          writeStorage();
+          renderSummary();
+        });
+
+        document.getElementById('boilersTableBody').addEventListener('change', (e) => {
+          const input = e.target.closest('.qty-input');
+          if (!input) return;
+          const tab = input.getAttribute('data-tab');
+          const id = input.getAttribute('data-id');
+          const val = Number(state.quantities[tab]?.[id] || 0);
+          input.value = String(val);
+          renderTable();
+        });
+
+        const modelInput = document.getElementById('modelSearchInput');
+        modelInput.addEventListener('focus', () => {
+          renderDropdown(modelInput.value);
+        });
+        modelInput.addEventListener('input', (e) => {
+          state.selectedModel = e.target.value;
+          writeStorage();
+          renderDropdown(e.target.value);
+          renderSheathingBuilder();
+        });
+
+        document.getElementById('toggleDropdownBtn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          const dropdown = document.getElementById('modelDropdown');
+          if (dropdown.classList.contains('open')) {
+            closeDropdown();
+          } else {
+            renderDropdown('');
+            modelInput.focus();
+          }
+        });
+
+        document.getElementById('clearModelBtn').addEventListener('click', () => {
+          state.selectedModel = '';
+          modelInput.value = '';
+          writeStorage();
+          renderSheathingBuilder();
+          renderDropdown('');
+        });
+
+        document.getElementById('modelDropdown').addEventListener('click', (e) => {
+          const opt = e.target.closest('[data-select-model]');
+          if (!opt) return;
+          const chosen = opt.getAttribute('data-select-model');
+          state.selectedModel = chosen;
+          modelInput.value = chosen;
+          writeStorage();
+          closeDropdown();
+          renderSheathingBuilder();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.model-picker')) {
+            closeDropdown();
+          }
+        });
+
+        const reportModal = document.getElementById('reportModal');
+        document.getElementById('openReportBtn').addEventListener('click', () => {
+          syncMonthRollover(true);
+          state.reportPeriod = 'current';
+          updatePeriodButtons();
+          reportModal.classList.add('open');
+        });
+        document.getElementById('closeReportModalBtn').addEventListener('click', () => {
+          reportModal.classList.remove('open');
+        });
+        reportModal.addEventListener('click', (e) => {
+          if (e.target === reportModal) reportModal.classList.remove('open');
+        });
+
+        document.getElementById('periodSwitcher').addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-period]');
+          if (!btn) return;
+          const p = btn.getAttribute('data-period');
+          if (p === 'current' || p === 'previous') {
+            state.reportPeriod = p;
+            updatePeriodButtons();
+          }
+        });
+
+        document.getElementById('sharePdfBtn').addEventListener('click', handleSharePdf);
+        document.getElementById('downloadPdfBtn').addEventListener('click', handleDownloadPdf);
+
+        document.getElementById('copyTextReportBtn').addEventListener('click', async () => {
+          const text = buildReportText(state.reportPeriod);
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(text);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = text;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              ta.remove();
+            }
+            showToast('Текст отчёта скопирован');
+          } catch (err) {
+            showToast('Не удалось скопировать текст');
+          }
+        });
+
+        const clearModal = document.getElementById('confirmClearModal');
+        document.getElementById('clearAllBtn').addEventListener('click', () => {
+          clearModal.classList.add('open');
+        });
+        document.getElementById('closeClearModalBtn').addEventListener('click', () => {
+          clearModal.classList.remove('open');
+        });
+        document.getElementById('cancelClearBtn').addEventListener('click', () => {
+          clearModal.classList.remove('open');
+        });
+        clearModal.addEventListener('click', (e) => {
+          if (e.target === clearModal) clearModal.classList.remove('open');
+        });
+
+        document.getElementById('confirmClearBtn').addEventListener('click', () => {
+          state.quantities = createEmptyQuantities();
+          writeStorage();
+          renderTable();
+          renderSummary();
+          clearModal.classList.remove('open');
+          showToast('Количество за месяц очищено');
+        });
+      }
+
+      loadState();
+      bindEvents();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
