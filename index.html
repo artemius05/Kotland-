@@ -261,201 +261,6 @@
       border-color: var(--primary);
     }
 
-    .builder-box {
-      margin: 16px 18px;
-      padding: 16px;
-      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-      border: 1px solid #cbd5e1;
-      border-radius: 16px;
-    }
-
-    .builder-top {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .builder-title {
-      margin: 0;
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text);
-    }
-
-    .builder-sub {
-      font-size: 12.5px;
-      color: var(--muted);
-    }
-
-    .model-picker {
-      position: relative;
-      margin-bottom: 12px;
-    }
-
-    .model-input-wrap {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .model-input {
-      width: 100%;
-      padding: 12px 104px 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      background: var(--surface);
-      border: 1.5px solid #cbd5e1;
-      border-radius: 12px;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .model-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
-    }
-
-    .model-actions {
-      position: absolute;
-      right: 6px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .icon-mini-btn {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--surface-soft);
-      color: var(--text);
-      border-radius: 8px;
-      height: 32px;
-      padding: 0 9px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .icon-mini-btn:hover {
-      background: #e2e8f0;
-    }
-
-    .model-dropdown {
-      display: none;
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      z-index: 30;
-      max-height: 260px;
-      overflow-y: auto;
-      background: var(--surface);
-      border: 1.5px solid #cbd5e1;
-      border-radius: 12px;
-      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.14);
-      padding: 6px;
-    }
-
-    .model-dropdown.open {
-      display: block;
-    }
-
-    .model-option {
-      width: 100%;
-      appearance: none;
-      border: none;
-      background: transparent;
-      text-align: left;
-      padding: 10px 12px;
-      border-radius: 9px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: var(--text);
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .model-option:hover,
-    .model-option.selected {
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
-
-    .model-option-meta {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .parts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .part-card {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-
-    .part-name {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--primary);
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .part-specs {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px;
-    }
-
-    .spec-item {
-      background: var(--surface-soft);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 6px 8px;
-    }
-
-    .spec-label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }
-
-    .spec-val {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text);
-      margin-top: 1px;
-    }
-
-    .builder-empty {
-      background: var(--surface);
-      border: 1px dashed #cbd5e1;
-      border-radius: 12px;
-      padding: 16px;
-      text-align: center;
-      font-size: 13.5px;
-      color: var(--muted);
-    }
-
     .table-wrap {
       width: 100%;
       overflow-x: auto;
@@ -885,10 +690,6 @@
         padding: 12px 10px 32px;
       }
 
-      .parts-grid {
-        grid-template-columns: 1fr;
-      }
-
       table.boilers-table th,
       table.boilers-table td {
         padding: 10px 8px;
@@ -951,35 +752,9 @@
         <div class="panel-head">
           <div>
             <h2 class="panel-title" id="sectionTitle">Гейлетина</h2>
-            <p class="panel-hint" id="sectionHint">Лист «Гейлетина» • 102 позиции по порядку</p>
+            <p class="panel-hint" id="sectionHint">Лист «Гейлетина» • позиции с ценой больше 0</p>
           </div>
           <div class="tab-mini-stat" id="sectionSummary">0 шт • 0 ₴</div>
-        </div>
-
-        <div class="builder-box" id="sheathingBuilder" style="display: none;">
-          <div class="builder-top">
-            <h3 class="builder-title">Конструктор деталей обшивки</h3>
-            <span class="builder-sub">Выберите модель котла — откроются 4 детали (ширина, длина, загиб, количество)</span>
-          </div>
-
-          <div class="model-picker">
-            <div class="model-input-wrap">
-              <input
-                type="text"
-                id="modelSearchInput"
-                class="model-input"
-                placeholder="Введите номер или название котла..."
-                autocomplete="off"
-              />
-              <div class="model-actions">
-                <button type="button" class="icon-mini-btn" id="toggleDropdownBtn" title="Список моделей">Список</button>
-                <button type="button" class="icon-mini-btn" id="clearModelBtn" title="Очистить выбор">×</button>
-              </div>
-            </div>
-            <div class="model-dropdown" id="modelDropdown" role="listbox"></div>
-          </div>
-
-          <div id="partsResult"></div>
         </div>
 
         <div class="table-search-bar">
@@ -987,7 +762,7 @@
             type="text"
             id="tableSearchInput"
             class="table-search-input"
-            placeholder="Поиск по № (1–102) или названию котла..."
+            placeholder="Поиск по № или названию котла..."
             autocomplete="off"
           />
           <button type="button" class="filter-toggle-btn" id="onlyMarkedBtn">Только отмеченные</button>
@@ -1197,24 +972,27 @@
         [102, 'ТА4000', 0, 0]
       ];
 
+      // Оставляем только позиции с ценой > 0 для соответствующего раздела
       const CATALOG = {
-        geiletina: BOILER_ROWS.map(([num, name, , geilPrice]) => ({
-          id: `g-${num}`,
-          num,
-          name,
-          price: geilPrice
-        })),
-        obshiva: BOILER_ROWS.map(([num, name, obshivaPrice]) => ({
-          id: `o-${num}`,
-          num,
-          name,
-          price: obshivaPrice
-        }))
+        geiletina: BOILER_ROWS
+          .filter(([, , , geilPrice]) => Number(geilPrice) > 0)
+          .map(([num, name, , geilPrice]) => ({
+            id: `g-${num}`,
+            num,
+            name,
+            price: geilPrice
+          })),
+        obshiva: BOILER_ROWS
+          .filter(([, , obshivaPrice]) => Number(obshivaPrice) > 0)
+          .map(([num, name, obshivaPrice]) => ({
+            id: `o-${num}`,
+            num,
+            name,
+            price: obshivaPrice
+          }))
       };
 
-      const SHEATHING_SPECS = {};
-
-      const STORAGE_KEY = 'boiler_monthly_tracker_local_v4';
+      const STORAGE_KEY = 'boiler_monthly_tracker_local_v5';
       let memoryFallback = null;
 
       function getCurrentMonthKey(dateObj) {
@@ -1252,10 +1030,6 @@
         return out;
       }
 
-      function getAllBuilderModels() {
-        return BOILER_ROWS.map(([num, name]) => `${num}. ${name}`);
-      }
-
       const state = {
         monthKey: getCurrentMonthKey(),
         previousMonthKey: getCurrentMonthKey(getPreviousMonthDate()),
@@ -1263,7 +1037,6 @@
         activeTab: 'geiletina',
         searchQuery: '',
         onlyMarked: false,
-        selectedModel: getAllBuilderModels()[0] || '',
         quantities: createEmptyQuantities(),
         previousQuantities: createEmptyQuantities()
       };
@@ -1283,7 +1056,6 @@
           monthKey: state.monthKey,
           previousMonthKey: state.previousMonthKey,
           activeTab: state.activeTab,
-          selectedModel: state.selectedModel,
           quantities: state.quantities,
           previousQuantities: state.previousQuantities,
           updatedAt: Date.now()
@@ -1323,7 +1095,6 @@
           if (typeof saved.monthKey === 'string') state.monthKey = saved.monthKey;
           if (typeof saved.previousMonthKey === 'string') state.previousMonthKey = saved.previousMonthKey;
           if (saved.activeTab === 'geiletina' || saved.activeTab === 'obshiva') state.activeTab = saved.activeTab;
-          if (typeof saved.selectedModel === 'string') state.selectedModel = saved.selectedModel;
           state.quantities = cloneQuantities(saved.quantities);
           state.previousQuantities = cloneQuantities(saved.previousQuantities);
         }
@@ -1428,19 +1199,16 @@
         btnObsh.classList.toggle('active', !isGeil);
         btnObsh.setAttribute('aria-selected', String(!isGeil));
 
+        const count = CATALOG[state.activeTab].length;
         document.getElementById('sectionTitle').textContent = isGeil ? 'Гейлетина' : 'Обшива';
         document.getElementById('sectionHint').textContent = isGeil
-          ? 'Тарифы по листу «Гейлетина» • 102 позиции по порядку'
-          : 'Тариф «Обшивка» и конструктор 4 деталей • 102 позиции';
+          ? `Лист «Гейлетина» • ${count} позиций с ценой`
+          : `Лист «Обшива» • ${count} позиций с ценой`;
 
-        document.getElementById('sheathingBuilder').style.display = isGeil ? 'none' : 'block';
         document.getElementById('onlyMarkedBtn').classList.toggle('active', state.onlyMarked);
 
         renderTable();
         renderSummary();
-        if (!isGeil) {
-          renderSheathingBuilder();
-        }
       }
 
       function renderTable() {
@@ -1516,104 +1284,6 @@
           `${formatQty(stats.geiletina.qty)} • ${formatMoney(stats.geiletina.sum)}`;
         document.getElementById('breakdownObshiva').textContent =
           `${formatQty(stats.obshiva.qty)} • ${formatMoney(stats.obshiva.sum)}`;
-      }
-
-      function getFourPartsForModel(modelLabel) {
-        const cleanName = modelLabel.replace(/^\d+\.\s*/, '');
-        const spec = SHEATHING_SPECS[modelLabel] || SHEATHING_SPECS[cleanName] || {};
-        const formatPart = (label, item) => ({
-          label,
-          width: item?.width || '—',
-          length: item?.length || '—',
-          bend: item?.bend || '—',
-          qty: formatQty(item?.qty ?? 1)
-        });
-
-        return [
-          formatPart('Швеллер верхний', spec.upperChannel),
-          formatPart('Швеллер нижний', spec.lowerChannel),
-          formatPart('Уголок передний', spec.frontAngle),
-          formatPart('Уголок задний', spec.rearAngle)
-        ];
-      }
-
-      function renderSheathingBuilder() {
-        const allModels = getAllBuilderModels();
-        const input = document.getElementById('modelSearchInput');
-        const partsBox = document.getElementById('partsResult');
-
-        if (document.activeElement !== input) {
-          input.value = state.selectedModel || '';
-        }
-
-        const q = (state.selectedModel || '').trim().toLowerCase();
-        const matchedModel = allModels.find((m) => m.toLowerCase() === q) || null;
-
-        if (!matchedModel) {
-          partsBox.innerHTML = `
-            <div class="builder-empty">
-              Выберите модель котла из списка выше, чтобы увидеть параметры 4 деталей:
-              <strong>Швеллер верхний</strong>, <strong>Швеллер нижний</strong>, <strong>Уголок передний</strong>, <strong>Уголок задний</strong>.
-            </div>
-          `;
-          return;
-        }
-
-        const parts = getFourPartsForModel(matchedModel);
-        partsBox.innerHTML = `
-          <div class="parts-grid">
-            ${parts.map((p) => `
-              <div class="part-card">
-                <div class="part-name">${escapeHtml(p.label)}</div>
-                <div class="part-specs">
-                  <div class="spec-item">
-                    <div class="spec-label">Ширина</div>
-                    <div class="spec-val">${escapeHtml(p.width)}</div>
-                  </div>
-                  <div class="spec-item">
-                    <div class="spec-label">Длина</div>
-                    <div class="spec-val">${escapeHtml(p.length)}</div>
-                  </div>
-                  <div class="spec-item">
-                    <div class="spec-label">Загиб</div>
-                    <div class="spec-val">${escapeHtml(p.bend)}</div>
-                  </div>
-                  <div class="spec-item">
-                    <div class="spec-label">Количество</div>
-                    <div class="spec-val">${escapeHtml(p.qty)}</div>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      function renderDropdown(filterText) {
-        const dropdown = document.getElementById('modelDropdown');
-        const q = (filterText || '').trim().toLowerCase();
-        const models = getAllBuilderModels().filter((m) => !q || m.toLowerCase().includes(q));
-
-        if (!models.length) {
-          dropdown.innerHTML = `<div class="model-option" style="cursor:default;color:var(--muted);">Модель не найдена</div>`;
-          dropdown.classList.add('open');
-          return;
-        }
-
-        dropdown.innerHTML = models.map((m) => {
-          const isSel = state.selectedModel === m;
-          return `
-            <button type="button" class="model-option ${isSel ? 'selected' : ''}" data-select-model="${escapeHtml(m)}">
-              <span>${escapeHtml(m)}</span>
-              <span class="model-option-meta">4 детали</span>
-            </button>
-          `;
-        }).join('');
-        dropdown.classList.add('open');
-      }
-
-      function closeDropdown() {
-        document.getElementById('modelDropdown').classList.remove('open');
       }
 
       function updatePeriodButtons() {
@@ -1970,53 +1640,6 @@
           const val = Number(state.quantities[tab]?.[id] || 0);
           input.value = String(val);
           renderTable();
-        });
-
-        const modelInput = document.getElementById('modelSearchInput');
-        modelInput.addEventListener('focus', () => {
-          renderDropdown(modelInput.value);
-        });
-        modelInput.addEventListener('input', (e) => {
-          state.selectedModel = e.target.value;
-          writeStorage();
-          renderDropdown(e.target.value);
-          renderSheathingBuilder();
-        });
-
-        document.getElementById('toggleDropdownBtn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          const dropdown = document.getElementById('modelDropdown');
-          if (dropdown.classList.contains('open')) {
-            closeDropdown();
-          } else {
-            renderDropdown('');
-            modelInput.focus();
-          }
-        });
-
-        document.getElementById('clearModelBtn').addEventListener('click', () => {
-          state.selectedModel = '';
-          modelInput.value = '';
-          writeStorage();
-          renderSheathingBuilder();
-          renderDropdown('');
-        });
-
-        document.getElementById('modelDropdown').addEventListener('click', (e) => {
-          const opt = e.target.closest('[data-select-model]');
-          if (!opt) return;
-          const chosen = opt.getAttribute('data-select-model');
-          state.selectedModel = chosen;
-          modelInput.value = chosen;
-          writeStorage();
-          closeDropdown();
-          renderSheathingBuilder();
-        });
-
-        document.addEventListener('click', (e) => {
-          if (!e.target.closest('.model-picker')) {
-            closeDropdown();
-          }
         });
 
         const reportModal = document.getElementById('reportModal');
